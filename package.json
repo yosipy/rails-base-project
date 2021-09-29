@@ -1,4 +1,11 @@
 {
+  "name": "rails-base-project",
+  "private": true,
+  "scripts": {
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --devtool eval-cheap-module-source-map --watch",
+    "typecheck": "tsc -p . --noEmit"
+  },
   "devDependencies": {
     "@babel/core": "7.15.0",
     "@babel/plugin-transform-runtime": "7.14.5",
