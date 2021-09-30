@@ -1,5 +1,8 @@
 FROM ruby:3.0.2
 
+ENV NODE_VERSION=14.x
+
+RUN curl -SL https://deb.nodesource.com/setup_${NODE_VERSION} | bash -
 RUN apt-get update -qq && apt-get install -y \
   nodejs \
   postgresql-client
