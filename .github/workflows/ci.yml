@@ -1,0 +1,16 @@
+name: Test
+on: [push]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Docker compose build
+        env:
+          RAILS_ENV: test
+        run: docker-compose build
+      - name: DB setup
+        run: docker-compose run app bundle exec rails db:setup
+      - name: Run rspec
+        run: docker-compose run app bundle exec rspec
