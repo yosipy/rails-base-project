@@ -26,8 +26,8 @@ development:
   <<: *default
   database: app_development
   port: 5432
-  username: postgres
-  password: postgres
+  username: pguser
+  password: password
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -62,8 +62,8 @@ development:
 test:
   <<: *default
   database: app_test
-  username: postgres
-  password: postgres
+  username: pguser
+  password: password
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

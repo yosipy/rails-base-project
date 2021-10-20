@@ -76,11 +76,11 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13.4
+        image: postgres:11
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: app_test
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: pguser
+          POSTGRES_DB: _app_test
+          POSTGRES_PASSWORD: password
         ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
@@ -101,8 +101,16 @@ jobs:
       #   DATABASE_HOST: postgres
       #   REDIS_URL: redis://redis:6379/1
 
+    env:
+      RAILS_ENV: test
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: _app_test
+      DB_USER: pguser
+      DB_PASSWORD: password
+
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       # - name: Set up Ruby
       #   uses: actions/setup-ruby@v1
       #   with:
@@ -123,26 +131,15 @@ jobs:
         run: gem install bundler --no-document -v $(grep "BUNDLED WITH" -1 Gemfile.lock | tail -n 1)
       - name: Bundle install
         run: bundle install --path=vendor/bundle --jobs 4 --retry 3
-      # - name: Install Node.js
-      #   run: |
-      #     curl -sL https://deb.nodesource.com/setup_14.x | bash -
-      #     apt-get install -y nodejs
+      - name: Install Node.js
+        run: |
+          curl -sL https://deb.nodesource.com/setup_14.x | bash -
+          apt-get install -y nodejs
+      - name: Install dependencies
+        run: npm i
       - name: Setup test database
-        env:
-          RAILS_ENV: test
-          PGHOST: localhost
-          POSTGRES_DB: app_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
         run: |
           cp config/database.ci.yml config/database.yml
           bundle exec rails db:create db:migrate
       - name: Run tests
-        env:
-          PGHOST: localhost
-          POSTGRES_DB: app_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          PGPORT: ${{ job.services.postgres.ports[5432] }}
-          RAILS_ENV: test
-        run: rspec
+        run: bundle exec rspec
