@@ -16,7 +16,7 @@ jobs:
           POSTGRES_USER: pguser
           POSTGRES_PASSWORD: password
           # POSTGRES_HOST_AUTH_METHOD: trust
-        options: |
+        options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
