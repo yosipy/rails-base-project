@@ -67,7 +67,7 @@ jobs:
           RAILS_ENV: test
           # DATABASE_URL: postgres://pguser:password@localhost:5432/app_test
           # POSTGRES_PASSWORD: password
-          POSTGRES_PORT: 5432
+          DATABASE_PORT: 5432
           DATABASE_HOST: postgres
         run: |
           bundle exec rails db:create
