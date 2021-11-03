@@ -12,7 +12,7 @@ jobs:
       postgres:
         image: postgres:13.4
         env:
-          # POSTGRES_HOST: postgres
+          POSTGRES_DB: postgres
           POSTGRES_USER: pguser
           POSTGRES_PASSWORD: password
           # POSTGRES_HOST_AUTH_METHOD: trust
