@@ -68,7 +68,7 @@ jobs:
           # DATABASE_URL: postgres://pguser:password@localhost:5432/app_test
           # POSTGRES_PASSWORD: password
           DATABASE_PORT: 5432
-          DATABASE_HOST: postgres
+          DATABASE_HOST: localhost
         run: |
           bundle exec rails db:create
           bundle exec rails db:seed
