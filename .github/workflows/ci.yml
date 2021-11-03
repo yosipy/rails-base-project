@@ -47,7 +47,7 @@ jobs:
           ruby-version: 3.0.2
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Install library for postgres
-        run: apt-get -yqq install libpq-dev
+        run: sudo apt-get -yqq install libpq-dev
       # - name: Install Bundler
       #   run: gem install bundler --no-document -v $(grep "BUNDLED WITH" -1 Gemfile.lock | tail -n 1)
       - name: Bundle install
