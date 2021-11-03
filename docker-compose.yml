@@ -25,7 +25,8 @@ services:
     volumes:
       - '.:/app'
     environment:
-      - 'DATABASE_PASSWORD=password'
+      - 'RAILS_ENV=development'
+      - 'DATABASE_HOST=db'
     tty: true
     stdin_open: true
     depends_on:

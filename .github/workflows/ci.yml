@@ -1,92 +1,28 @@
-# name: Test
-# on: [push]
-# jobs:
-#   run:
-#     runs-on: ubuntu-latest
-
-#     services:
-#       postgres:
-#         image: postgres:13.4
-#         port: 5432:5432
-#         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-#         env:
-#           POSTGRES_DB: localhost
-#           POSTGRES_HOST_AUTH_METHOD: 'trust'
-#       redis:
-#         image: redis:6.25
-#         options: --health-cmd "redis-cli -h localhost ping" --health-interval 10s --health-timeout 5s --health-retries 15
-#     container:
-#       image:  ruby:3.0.2
-#       env:
-#         RAILS_ENV: test
-#         DATABASE_HOST: postgres
-#         REDIS_URL: redis://redis:6379/1
-
-#     steps:
-#       - uses: actions/checkout@v2
-#       # - name: Cache node modules
-#       #   uses: actions/cache@v2
-#       #   env:
-#       #     cache-name: cache-node-modules
-#       #   with:
-#       #     # npm キャッシュファイルは Linux/macOS の「~/.npm」に保存される
-#       #     path: ~/.npm
-#       #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-#       #     restore-keys: |
-#       #       ${{ runner.os }}-build-${{ env.cache-name }}-
-#       #       ${{ runner.os }}-build-
-#       #       ${{ runner.os }}-
-#       # - name: Cache bundle gems
-#       #   uses: actions/cache@v2
-#       #   with:
-#       #     path: vendor/bundle
-#       #     key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
-#       #     restore-keys: |
-#       #       ${{ runner.os }}-gem-${{ env.cache-name }}-
-#       #       ${{ runner.os }}-gem-
-#       #       ${{ runner.os }}-
-#       # - name: Install Node.js and Yarn
-#       #   run: |
-#       #     # https://github.com/nodesource/distributions/blob/master/README.md#installation-instructions
-#       #     curl -sL https://deb.nodesource.com/setup_12.x | bash -
-#       #     apt-get install -y nodejs
-#       #     # https://classic.yarnpkg.com/en/docs/install#debian-stable
-#       #     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-#       #     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-#       #     apt update && apt install yarn
-#       - name: Install Bundler
-#         run: gem install bundler --no-document -v $(grep "BUNDLED WITH" -1 Gemfile.lock | tail -n 1)
-#       - name: Bundle install
-#         run: bundle install --path=vendor/bundle --jobs 4 --retry 3
-#       - name: Yarn install
-#         run: bundle exec rails yarn:install
-#       - name: DB setup
-#         run: bundle exec rails db:setup
-#       - name: Run rspec
-#         run: bundle exec rspec
-
+# act
 
 name: Rails
+
 on: push
 
 jobs:
-  verify:
+  test:
     name: Build
     runs-on: ubuntu-latest
-
     services:
       postgres:
-        image: postgres:11
+        image: postgres:13.4
         env:
+          # POSTGRES_HOST: postgres
           POSTGRES_USER: pguser
-          POSTGRES_DB: _app_test
           POSTGRES_PASSWORD: password
-        ports: ["5432:5432"]
-        options: >-
+          # POSTGRES_HOST_AUTH_METHOD: trust
+        options: |
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        # ports:
+        # - 5432:5432
       # if you need redis
       # redis:
       #   image: redis
@@ -94,52 +30,46 @@ jobs:
       #   - 6379:6379
       #   options: --entrypoint redis-server
 
-    container:
-      image:  ruby:3.0.2
-      # env:
-      #   RAILS_ENV: test
-      #   DATABASE_HOST: postgres
-      #   REDIS_URL: redis://redis:6379/1
-
-    env:
-      RAILS_ENV: test
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_NAME: _app_test
-      DB_USER: pguser
-      DB_PASSWORD: password
+    # container:
+    #   image:  ruby:3.0.2
+    #   env:
+    #     RAILS_ENV: test
+    #     # DATABASE_HOST: postgres
+    #     # DATABASE_PORT: 5432
+    #     # DATABASE_USER: pguser
+    #     # DATABASE_PASSWORD: password
+    #     # REDIS_URL: redis://redis:6379/1
 
     steps:
       - uses: actions/checkout@v2
-      # - name: Set up Ruby
-      #   uses: actions/setup-ruby@v1
-      #   with:
-      #     ruby-version: 3.0.2
-      # - name: Set up Node
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: 14.x
-      # - name: Install dependencies
-      #   run: |
-      #     sudo apt-get -yqq install libpq-dev build-essential libcurl4-openssl-dev
-      #     gem install bundler
-      #     bundle install --jobs 4 --retry 3
-      #     yarn install
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Install library for postgres
-        run: apt-get install libpq-dev
-      - name: Install Bundler
-        run: gem install bundler --no-document -v $(grep "BUNDLED WITH" -1 Gemfile.lock | tail -n 1)
+        run: apt-get -yqq install libpq-dev
+      # - name: Install Bundler
+      #   run: gem install bundler --no-document -v $(grep "BUNDLED WITH" -1 Gemfile.lock | tail -n 1)
       - name: Bundle install
-        run: bundle install --path=vendor/bundle --jobs 4 --retry 3
-      - name: Install Node.js
+        # run: bundle install --path=vendor/bundle --jobs 4 --retry 3
+        # run: bundle install --jobs 4 --retry 3
         run: |
-          curl -sL https://deb.nodesource.com/setup_14.x | bash -
-          apt-get install -y nodejs
-      - name: Install dependencies
-        run: npm i
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+      # - name: Install Node.js
+      #   run: |
+      #     curl -sL https://deb.nodesource.com/setup_14.x | bash -
+      #     apt-get install -y nodejs
+      # - name: Install dependencies
+      #   run: npm i
       - name: Setup test database
+        env:
+          RAILS_ENV: test
+          # DATABASE_URL: postgres://pguser:password@localhost:5432/app_test
+          # POSTGRES_PASSWORD: password
+          POSTGRES_PORT: 5432
+          DATABASE_HOST: postgres
         run: |
-          cp config/database.ci.yml config/database.yml
-          bundle exec rails db:create db:migrate
+          bundle exec rails db:setup
       - name: Run tests
         run: bundle exec rspec
