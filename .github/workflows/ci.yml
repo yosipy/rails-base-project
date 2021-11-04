@@ -39,13 +39,13 @@ jobs:
           ruby-version: 3.0.2
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Install library for postgres
-        run: apt-get update && apt-get -yqq install libpq-dev
+        run: sudo apt-get update && sudo apt-get -yqq install libpq-dev
       - name: Bundle install
         run: bundle install --path=vendor/bundle --jobs 4 --retry 3
       - name: Install Node.js
         run: |
           curl -sL https://deb.nodesource.com/setup_14.x | bash -
-          apt-get install -y nodejs
+          sudo apt-get install -y nodejs
       - name: Install dependencies
         run: npm i
       - name: Setup test database
