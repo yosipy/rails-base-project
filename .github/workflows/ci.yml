@@ -3,8 +3,8 @@ name: Rails
 on: push
 
 jobs:
-  test:
-    name: Build
+  rails_test:
+    name: Rails test
     runs-on: ubuntu-latest
     services:
       postgres:
