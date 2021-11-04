@@ -22,13 +22,13 @@ jobs:
           --health-retries 5
         ports:
         - 5432:5432
-      # if you need redis
-      # redis:
-      #   image: redis
-      #   ports:
-      #   - 6379:6379
-      #   options: --entrypoint redis-server
-
+      redis:
+        image: redis:6.25
+        options: >-
+          --health-cmd "redis-cli -h localhost ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 1
     # container:
     #   image:  ruby:3.0.2
     #   env:
@@ -38,7 +38,11 @@ jobs:
     #     # DATABASE_USER: pguser
     #     # DATABASE_PASSWORD: password
     #     # REDIS_URL: redis://redis:6379/1
-
+    env:
+      RAILS_ENV: test
+      DATABASE_PORT: 5432
+      DATABASE_HOST: localhost
+      REDIS_URL: redis://redis:6379/1
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
@@ -56,10 +60,6 @@ jobs:
       # - name: Install dependencies
       #   run: npm i
       - name: Setup test database
-        env:
-          RAILS_ENV: test
-          DATABASE_PORT: 5432
-          DATABASE_HOST: localhost
         run: |
           bundle exec rails db:create
           bundle exec rails db:seed
