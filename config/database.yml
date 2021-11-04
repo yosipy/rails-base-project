@@ -26,7 +26,6 @@ default: &default
 development:
   <<: *default
   database: app_development
-  port: 5432
   username: pguser
   password: password
 
