@@ -45,7 +45,7 @@ jobs:
       - name: Install Node.js
         run: |
           curl -sL https://deb.nodesource.com/setup_14.x | bash -
-          sudo apt-get install -y nodejs
+          sudo apt-get update && sudo apt-get install -y nodejs
       - name: Install dependencies
         run: npm i
       - name: Setup test database
