@@ -32,7 +32,7 @@ jobs:
       env:
         RAILS_ENV: test
         DATABASE_PORT: 5432
-        DATABASE_HOST: localhost
+        DATABASE_HOST: postgres
         REDIS_URL: redis://redis:6379/1
     steps:
       - uses: actions/checkout@v2
