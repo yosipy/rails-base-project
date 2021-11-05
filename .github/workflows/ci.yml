@@ -27,17 +27,15 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 1
-    env:
-      RAILS_ENV: test
-      DATABASE_PORT: 5432
-      DATABASE_HOST: localhost
-      REDIS_URL: redis://redis:6379/1
+    container:
+      image: ruby:3.0.2
+      env:
+        RAILS_ENV: test
+        DATABASE_PORT: 5432
+        DATABASE_HOST: localhost
+        REDIS_URL: redis://redis:6379/1
     steps:
       - uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0.2
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Install library for postgres
         run: sudo apt-get update && sudo apt-get -yqq install libpq-dev
       - name: Bundle install
