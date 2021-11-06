@@ -1,0 +1,54 @@
+name: Rails
+
+on: push
+
+jobs:
+  rails_test:
+    name: Rails test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: pguser
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+        - 5432:5432
+      redis:
+        image: redis:6.0
+        options: >-
+          --health-cmd "redis-cli -h localhost ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 1
+    container:
+      image: ruby:3.0.2
+      env:
+        RAILS_ENV: test
+        DATABASE_PORT: 5432
+        DATABASE_HOST: postgres
+        REDIS_URL: redis://redis:6379/1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install library for postgres
+        run: apt-get update && apt-get -yqq install libpq-dev
+      - name: Bundle install
+        run: bundle install --path=vendor/bundle --jobs 4 --retry 3
+      - name: Install Node.js
+        run: |
+          curl -sL https://deb.nodesource.com/setup_14.x | bash -
+          apt-get update && apt-get install -y nodejs
+      - name: Install dependencies
+        run: npm i
+      - name: Setup test database
+        run: |
+          bundle exec rails db:create
+          bundle exec rails db:seed
+      - name: Run tests
+        run: bundle exec rspec
